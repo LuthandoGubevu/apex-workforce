@@ -63,6 +63,12 @@ public sealed class LocalDatabase : IAsyncDisposable
                 key   TEXT PRIMARY KEY,
                 value TEXT NOT NULL
             );
+            CREATE TABLE IF NOT EXISTS fingerprint_templates (
+                employee_id  TEXT NOT NULL PRIMARY KEY,
+                fp_id        INTEGER NOT NULL,
+                template     BLOB NOT NULL,
+                enrolled_at  TEXT NOT NULL
+            );
         ");
     }
 
@@ -210,6 +216,51 @@ public sealed class LocalDatabase : IAsyncDisposable
         await Exec(
             "INSERT OR REPLACE INTO settings (key, value) VALUES ($k, $v)",
             p => { p.AddWithValue("$k", key); p.AddWithValue("$v", value); });
+    }
+
+    // ── Fingerprint templates ─────────────────────────────────────────────────
+
+    public async Task SaveFingerprintTemplateAsync(string employeeId, int fpId, byte[] template)
+    {
+        await Exec(
+            @"INSERT INTO fingerprint_templates (employee_id, fp_id, template, enrolled_at)
+              VALUES ($eid, $fpid, $tpl, $now)
+              ON CONFLICT(employee_id) DO UPDATE
+                SET fp_id=excluded.fp_id, template=excluded.template, enrolled_at=excluded.enrolled_at",
+            p =>
+            {
+                p.AddWithValue("$eid",  employeeId);
+                p.AddWithValue("$fpid", fpId);
+                p.AddWithValue("$tpl",  template);
+                p.AddWithValue("$now",  DateTime.UtcNow.ToString("O"));
+            });
+    }
+
+    public async Task<(int FpId, byte[] Template)?> GetFingerprintTemplateAsync(string employeeId)
+    {
+        using var cmd = _conn!.CreateCommand();
+        cmd.CommandText = "SELECT fp_id, template FROM fingerprint_templates WHERE employee_id = $id";
+        cmd.Parameters.AddWithValue("$id", employeeId);
+        using var reader = await cmd.ExecuteReaderAsync();
+        if (!await reader.ReadAsync()) return null;
+        return ((int)reader.GetInt64(0), (byte[])reader["template"]);
+    }
+
+    public async Task<List<(string EmployeeId, int FpId, byte[] Template)>> GetAllFingerprintTemplatesAsync()
+    {
+        var result = new List<(string, int, byte[])>();
+        using var cmd = _conn!.CreateCommand();
+        cmd.CommandText = "SELECT employee_id, fp_id, template FROM fingerprint_templates";
+        using var reader = await cmd.ExecuteReaderAsync();
+        while (await reader.ReadAsync())
+            result.Add((reader.GetString(0), (int)reader.GetInt64(1), (byte[])reader["template"]));
+        return result;
+    }
+
+    public async Task DeleteFingerprintTemplateAsync(string employeeId)
+    {
+        await Exec("DELETE FROM fingerprint_templates WHERE employee_id = $id",
+            p => p.AddWithValue("$id", employeeId));
     }
 
     // ── Private helpers ───────────────────────────────────────────────────────

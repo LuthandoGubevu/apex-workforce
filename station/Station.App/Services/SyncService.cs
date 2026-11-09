@@ -1,4 +1,7 @@
+using Apex.Station.Hardware;
+using Apex.Station.Hardware.ZkFingerprint;
 using Apex.Station.Models;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Configuration;
 
@@ -17,11 +20,15 @@ public sealed class SyncService : BackgroundService
     public int PendingCount => _pendingCount;
     public DateTime LastSyncTime { get; private set; } = DateTime.MinValue;
 
-    public SyncService(FirestoreRestClient firestore, LocalDatabase db, IConfiguration config)
+    private readonly IServiceProvider? _services;
+
+    public SyncService(FirestoreRestClient firestore, LocalDatabase db, IConfiguration config,
+        IServiceProvider? services = null)
     {
         _firestore = firestore;
         _db        = db;
         _config    = config;
+        _services  = services;
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -35,6 +42,9 @@ public sealed class SyncService : BackgroundService
             try { await _firestore.SignInAsync(email, password, stoppingToken); }
             catch (Exception ex) { Console.WriteLine($"[SYNC] Auth failed: {ex.Message}"); }
         }
+
+        // Load cached fingerprint templates into ZK reader on startup
+        await LoadFingerprintTemplatesAsync(stoppingToken);
 
         while (!stoppingToken.IsCancellationRequested)
         {
@@ -170,6 +180,25 @@ public sealed class SyncService : BackgroundService
         catch (Exception ex)
         {
             Console.WriteLine($"[SYNC] Employee sync error: {ex.Message}");
+        }
+    }
+
+    private async Task LoadFingerprintTemplatesAsync(CancellationToken ct)
+    {
+        try
+        {
+            var reader = _services?.GetService<IFingerprintReader>();
+            if (reader is not ZkFingerprintReader zkReader) return;
+
+            var templates = await _db.GetAllFingerprintTemplatesAsync();
+            foreach (var (empId, fpId, tpl) in templates)
+                zkReader.LoadTemplate(empId, fpId, tpl);
+
+            Console.WriteLine($"[SYNC] Loaded {templates.Count} fingerprint template(s) into ZK reader.");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[SYNC] Template load error: {ex.Message}");
         }
     }
 

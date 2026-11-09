@@ -1,5 +1,8 @@
 using Avalonia;
 using Apex.Station.Hardware;
+using Apex.Station.Hardware.HidRelay;
+using Apex.Station.Hardware.SerialRelay;
+using Apex.Station.Hardware.ZkFingerprint;
 using Apex.Station.Services;
 using Apex.Station.ViewModels;
 using Microsoft.Extensions.Configuration;
@@ -47,9 +50,12 @@ internal static class Program
                 }
                 else
                 {
-                    // M5 wires real hardware implementations
-                    services.AddSingleton<IFingerprintReader, SimulatedFingerprintReader>();
-                    services.AddSingleton<ITurnstileRelay,    SimulatedTurnstileRelay>();
+                    var relayType = config["Hardware:RelayType"] ?? "hid";
+                    services.AddSingleton<IFingerprintReader, ZkFingerprintReader>();
+                    if (relayType.Equals("serial", StringComparison.OrdinalIgnoreCase))
+                        services.AddSingleton<ITurnstileRelay, SerialTurnstileRelay>();
+                    else
+                        services.AddSingleton<ITurnstileRelay, HidTurnstileRelay>();
                 }
 
                 // Core services
@@ -123,11 +129,14 @@ internal static class Program
 
         IFingerprintReader reader = simulate
             ? new SimulatedFingerprintReader()
-            : new SimulatedFingerprintReader(); // M5 replaces with real
+            : new ZkFingerprintReader(config);
 
+        var relayTypeCfg = config["Hardware:RelayType"] ?? "hid";
         ITurnstileRelay relay = simulate
             ? new SimulatedTurnstileRelay()
-            : new SimulatedTurnstileRelay(); // M5 replaces with real
+            : relayTypeCfg.Equals("serial", StringComparison.OrdinalIgnoreCase)
+                ? new SerialTurnstileRelay(config)
+                : new HidTurnstileRelay(config);
 
         await reader.InitialiseAsync();
         Console.WriteLine($"Fingerprint reader: {(reader.IsReady ? "READY" : "NOT READY")}");
