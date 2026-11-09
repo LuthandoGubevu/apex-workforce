@@ -1,0 +1,56 @@
+[
+  {
+    "description": "Normal day: IN 06:00, OUT 14:00 → 480 minutes",
+    "input": {
+      "partial": { "employeeId": "emp-1", "employeeName": "Test Employee", "employeeNumber": "EMP001", "department": "Brewing", "siteId": "site-1" },
+      "date": "2024-06-15",
+      "events": [
+        { "id": "e1", "direction": "IN",  "timestamp": "2024-06-15T06:00:00+02:00", "isCorrection": false },
+        { "id": "e2", "direction": "OUT", "timestamp": "2024-06-15T14:00:00+02:00", "isCorrection": false }
+      ]
+    },
+    "expected": { "minutesOnSite": 480, "missingClockOut": false, "missingClockIn": false, "eventCount": 2 }
+  },
+  {
+    "description": "Missing clock-out: IN present, no OUT",
+    "input": {
+      "partial": { "employeeId": "emp-1", "employeeName": "Test Employee", "employeeNumber": "EMP001", "department": "Brewing", "siteId": "site-1" },
+      "date": "2024-06-15",
+      "events": [
+        { "id": "e1", "direction": "IN", "timestamp": "2024-06-15T06:00:00+02:00", "isCorrection": false }
+      ]
+    },
+    "expected": { "minutesOnSite": 0, "missingClockOut": true, "missingClockIn": false, "eventCount": 1 }
+  },
+  {
+    "description": "Missing clock-in: OUT present, no IN",
+    "input": {
+      "partial": { "employeeId": "emp-1", "employeeName": "Test Employee", "employeeNumber": "EMP001", "department": "Brewing", "siteId": "site-1" },
+      "date": "2024-06-15",
+      "events": [
+        { "id": "e2", "direction": "OUT", "timestamp": "2024-06-15T14:00:00+02:00", "isCorrection": false }
+      ]
+    },
+    "expected": { "minutesOnSite": 0, "missingClockOut": false, "missingClockIn": true, "eventCount": 1 }
+  },
+  {
+    "description": "No events → no flags, 0 minutes",
+    "input": {
+      "partial": { "employeeId": "emp-1", "employeeName": "Test Employee", "employeeNumber": "EMP001", "department": "Brewing", "siteId": "site-1" },
+      "date": "2024-06-15",
+      "events": []
+    },
+    "expected": { "minutesOnSite": 0, "missingClockOut": false, "missingClockIn": false, "eventCount": 0 }
+  },
+  {
+    "description": "Night shift: IN at 22:00 on day, counts on that day as missing clock-out",
+    "input": {
+      "partial": { "employeeId": "emp-1", "employeeName": "Test Employee", "employeeNumber": "EMP001", "department": "Brewing", "siteId": "site-1" },
+      "date": "2024-06-15",
+      "events": [
+        { "id": "e1", "direction": "IN", "timestamp": "2024-06-15T22:00:00+02:00", "isCorrection": false }
+      ]
+    },
+    "expected": { "minutesOnSite": 0, "missingClockOut": true, "missingClockIn": false, "eventCount": 1 }
+  }
+]

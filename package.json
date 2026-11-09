@@ -1,0 +1,14 @@
+{
+  "name": "apex-workforce",
+  "private": true,
+  "workspaces": ["shared", "web", "functions"],
+  "scripts": {
+    "test": "npm --workspaces run test --if-present",
+    "dev": "npm --workspace web run dev",
+    "build": "npm --workspace web run build",
+    "emulators": "firebase emulators:start"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
