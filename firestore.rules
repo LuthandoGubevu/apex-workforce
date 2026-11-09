@@ -90,6 +90,14 @@ service cloud.firestore {
       allow delete: if isHR();
     }
 
+    // ── Encrypted biometric templates (write by Cloud Function / device only) ─
+    // Raw templates are NEVER stored; only AES-256-GCM blobs land here.
+    match /encryptedTemplates/{employeeId}/devices/{stationId} {
+      allow read:   if isAdmin() || role() == 'device';
+      allow create, update: if role() == 'device';
+      allow delete: if isAdmin();
+    }
+
     // ── System settings ───────────────────────────────────────────────────────
     match /settings/{docId} {
       allow read: if isSignedIn();

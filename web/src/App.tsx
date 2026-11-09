@@ -11,6 +11,7 @@ import ClockEvents from '@/pages/ClockEvents';
 import Attendance from '@/pages/Attendance';
 import OnSiteNow from '@/pages/OnSiteNow';
 import Corrections from '@/pages/Corrections';
+import Enrolment   from '@/pages/Enrolment';
 
 function Guard({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
@@ -36,6 +37,7 @@ function AppRoutes() {
         <Route path="attendance"   element={<Attendance />} />
         <Route path="on-site-now"  element={<OnSiteNow />} />
         <Route path="corrections"  element={<Corrections />} />
+        <Route path="enrolment"    element={<Enrolment />} />
       </Route>
     </Routes>
   );

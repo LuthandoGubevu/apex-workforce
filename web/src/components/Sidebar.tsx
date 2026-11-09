@@ -10,6 +10,7 @@ const NAV = [
   { to: '/attendance',   end: false, label: 'Attendance',    icon: 'calendar' },
   { to: '/clock-events', end: false, label: 'Clock Events',  icon: 'clock'    },
   { to: '/corrections',  end: false, label: 'Corrections',   icon: 'edit',    adminHr: true },
+  { to: '/enrolment',   end: false, label: 'Enrolment',     icon: 'finger',  adminHr: true },
   { to: '/access-groups',end: false, label: 'Access Groups', icon: 'lock',    adminHr: true },
   { to: '/stations',     end: false, label: 'Stations',      icon: 'wifi',    adminOnly: true },
   { to: '/sites',        end: false, label: 'Sites',         icon: 'building', adminOnly: true },
@@ -26,6 +27,7 @@ const Icon = ({ name }: { name: string }) => {
   if (name === 'lock')     return <svg className={cls} viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M10 1a4.5 4.5 0 0 0-4.5 4.5V9H5a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6a2 2 0 0 0-2-2h-.5V5.5A4.5 4.5 0 0 0 10 1Zm3 8V5.5a3 3 0 1 0-6 0V9h6Z" clipRule="evenodd" /></svg>;
   if (name === 'wifi')     return <svg className={cls} viewBox="0 0 20 20" fill="currentColor"><path d="M16.72 11.06A10.94 10.94 0 0 0 10 8.5c-2.613 0-5.013.987-6.72 2.56l1.42 1.498A8.96 8.96 0 0 1 10 10.5c1.99 0 3.826.65 5.3 1.738l1.42-1.178ZM10 15a2 2 0 0 0-2 2h4a2 2 0 0 0-2-2ZM5.19 13.278A6.97 6.97 0 0 1 10 11.5c1.831 0 3.513.705 4.81 1.86l1.37-1.14A8.97 8.97 0 0 0 10 10a8.97 8.97 0 0 0-6.18 2.22l1.37 1.058Z" /></svg>;
   if (name === 'building') return <svg className={cls} viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M4 16.5v-13h-.25a.75.75 0 0 1 0-1.5h12.5a.75.75 0 0 1 0 1.5H16v13h.25a.75.75 0 0 1 0 1.5h-3.5a.75.75 0 0 1-.75-.75v-2.5a.75.75 0 0 0-.75-.75h-2.5a.75.75 0 0 0-.75.75v2.5a.75.75 0 0 1-.75.75h-3.5a.75.75 0 0 1 0-1.5H4Zm3-11a.75.75 0 0 1 .75-.75h.5a.75.75 0 0 1 0 1.5h-.5A.75.75 0 0 1 7 5.5Zm.75 3.75A.75.75 0 0 0 7 10v.5a.75.75 0 0 0 1.5 0V10a.75.75 0 0 0-.75-.75Zm2.25-.75a.75.75 0 0 1 .75-.75h.5a.75.75 0 0 1 0 1.5h-.5a.75.75 0 0 1-.75-.75Z" clipRule="evenodd" /></svg>;
+  if (name === 'finger')   return <svg className={cls} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"><path d="M12 11c0-1.657-1.343-3-3-3s-3 1.343-3 3v3"/><path d="M9 11v5"/><path d="M15 11v3"/><path d="M15 8a3 3 0 0 0-3-3"/><path d="M12 5a7 7 0 0 1 7 7v2"/><path d="M5 14v-3a7 7 0 0 1 7-7"/><path d="M9 19c0 1.1.9 2 2 2h2a2 2 0 0 0 2-2v-1"/></svg>;
   return null;
 };
 
