@@ -7,3 +7,11 @@ dist/
 *.local
 coverage/
 .DS_Store
+
+# .NET build output
+station/**/bin/
+station/**/obj/
+station/**/*.user
+
+# Station credentials — never commit, copy from appsettings.example.json
+station/Station.App/appsettings.json
