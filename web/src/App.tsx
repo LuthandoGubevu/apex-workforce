@@ -10,6 +10,7 @@ import AccessGroups from '@/pages/AccessGroups';
 import ClockEvents from '@/pages/ClockEvents';
 import Attendance from '@/pages/Attendance';
 import OnSiteNow from '@/pages/OnSiteNow';
+import Corrections from '@/pages/Corrections';
 
 function Guard({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
@@ -27,13 +28,14 @@ function AppRoutes() {
       <Route path="/login" element={<Login />} />
       <Route path="/" element={<Guard><Layout /></Guard>}>
         <Route index element={<Dashboard />} />
-        <Route path="employees" element={<Employees />} />
-        <Route path="sites" element={<Sites />} />
-        <Route path="stations" element={<Stations />} />
+        <Route path="employees"    element={<Employees />} />
+        <Route path="sites"        element={<Sites />} />
+        <Route path="stations"     element={<Stations />} />
         <Route path="access-groups" element={<AccessGroups />} />
         <Route path="clock-events" element={<ClockEvents />} />
-        <Route path="attendance" element={<Attendance />} />
-        <Route path="on-site-now" element={<OnSiteNow />} />
+        <Route path="attendance"   element={<Attendance />} />
+        <Route path="on-site-now"  element={<OnSiteNow />} />
+        <Route path="corrections"  element={<Corrections />} />
       </Route>
     </Routes>
   );
