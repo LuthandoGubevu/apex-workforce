@@ -14,6 +14,7 @@ const NAV = [
   { to: '/access-groups',end: false, label: 'Access Groups', icon: 'lock',    adminHr: true },
   { to: '/stations',     end: false, label: 'Stations',      icon: 'wifi',    adminOnly: true },
   { to: '/sites',        end: false, label: 'Sites',         icon: 'building', adminOnly: true },
+  { to: '/users',        end: false, label: 'Staff Users',   icon: 'users',   adminOnly: true },
 ];
 
 const Icon = ({ name }: { name: string }) => {
