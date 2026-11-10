@@ -6,3 +6,5 @@ export {
   deleteEmployeeTemplates,
   onEmployeeWrite,
 } from './enrolment';
+
+export { createStaffUser } from './staffUsers';

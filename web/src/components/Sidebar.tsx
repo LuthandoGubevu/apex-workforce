@@ -14,6 +14,7 @@ const NAV = [
   { to: '/access-groups',end: false, label: 'Access Groups', icon: 'lock',    adminHr: true },
   { to: '/stations',     end: false, label: 'Stations',      icon: 'wifi',    adminOnly: true },
   { to: '/sites',        end: false, label: 'Sites',         icon: 'building', adminOnly: true },
+  { to: '/users',        end: false, label: 'Staff Users',   icon: 'users',   adminOnly: true },
 ];
 
 const Icon = ({ name }: { name: string }) => {
@@ -46,7 +47,7 @@ export default function Sidebar() {
     <aside className="w-60 flex flex-col bg-brand-800 text-white shrink-0">
       <div className="px-5 py-6 border-b border-brand-700">
         <div className="font-semibold text-lg tracking-tight">Apex Workforce</div>
-        <div className="text-brand-200 text-xs mt-0.5">SAB Time &amp; Attendance</div>
+        <div className="text-brand-200 text-xs mt-0.5">Biometric Time &amp; Attendance</div>
       </div>
 
       <nav className="flex-1 px-3 py-4 space-y-0.5 overflow-y-auto">
