@@ -91,6 +91,17 @@ export interface ClockEvent {
   createdAt: string;
 }
 
+export interface EnrolmentRequest {
+  id: string;
+  employeeId: string;
+  stationId: string;
+  status: 'pending' | 'in_progress' | 'completed' | 'failed' | 'cancelled';
+  requestedAt: string;
+  requestedBy: string;
+  completedAt?: string;
+  errorMessage?: string;
+}
+
 export interface StaffUser {
   id: string;
   email: string;
