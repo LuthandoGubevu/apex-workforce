@@ -1,0 +1,107 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function staff() {
+      return get(/databases/$(database)/documents/staffUsers/$(request.auth.uid)).data;
+    }
+
+    function role() {
+      return staff().role;
+    }
+
+    function isAdmin() {
+      return request.auth != null && role() == 'admin';
+    }
+
+    function isHR() {
+      return request.auth != null && role() in ['admin', 'hr'];
+    }
+
+    function isSupervisorOrAbove() {
+      return request.auth != null && role() in ['admin', 'hr', 'supervisor'];
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isHRForSite(siteId) {
+      return isAdmin() || (role() == 'hr' && staff().siteId == siteId);
+    }
+
+    // ── Sites ────────────────────────────────────────────────────────────────
+    match /sites/{siteId} {
+      allow read: if isSignedIn();
+      allow create, update, delete: if isAdmin();
+    }
+
+    // ── Stations ─────────────────────────────────────────────────────────────
+    match /stations/{stationId} {
+      allow read: if isSignedIn();
+      allow create, update, delete: if isAdmin();
+    }
+
+    // ── Access groups ─────────────────────────────────────────────────────────
+    match /accessGroups/{groupId} {
+      allow read: if isSignedIn();
+      allow create, update, delete: if isHR();
+    }
+
+    match /employeeAccessGroups/{docId} {
+      allow read: if isSignedIn();
+      allow write: if isHR();
+    }
+
+    // ── Employees ─────────────────────────────────────────────────────────────
+    // idNumber is restricted — web app layer must strip it for supervisor/device reads
+    match /employees/{employeeId} {
+      allow read: if isSignedIn();
+      allow create, update: if isHR();
+      allow delete: if isAdmin();
+    }
+
+    // ── Clock events (add-only, immutable) ────────────────────────────────────
+    match /clockEvents/{eventId} {
+      allow read: if isSupervisorOrAbove();
+      allow create: if isSignedIn();
+      allow update, delete: if false;
+    }
+
+    // ── Audit trail (add-only, immutable) ─────────────────────────────────────
+    match /audit/{entryId} {
+      allow read: if isAdmin();
+      allow create: if isSignedIn();
+      allow update, delete: if false;
+    }
+
+    // ── Staff users ───────────────────────────────────────────────────────────
+    match /staffUsers/{userId} {
+      allow read: if isSignedIn() && (request.auth.uid == userId || isAdmin());
+      allow create, update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // ── Enrolment requests ────────────────────────────────────────────────────
+    match /enrolmentRequests/{reqId} {
+      allow read: if isSignedIn();
+      allow create, update: if isSignedIn();
+      allow delete: if isHR();
+    }
+
+    // ── Encrypted biometric templates (write by Cloud Function / device only) ─
+    // Raw templates are NEVER stored; only AES-256-GCM blobs land here.
+    match /encryptedTemplates/{employeeId}/devices/{stationId} {
+      allow read:   if isAdmin() || role() == 'device';
+      allow create, update: if role() == 'device';
+      allow delete: if isAdmin();
+    }
+
+    // ── System settings ───────────────────────────────────────────────────────
+    match /settings/{docId} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+  }
+}

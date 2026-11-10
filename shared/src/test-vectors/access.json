@@ -1,0 +1,82 @@
+[
+  {
+    "description": "Active employee, correct site, in access group → allowed",
+    "input": {
+      "employee": { "status": "active", "startDate": "2024-01-01", "endDate": null, "siteId": "site-1", "biometricDeclined": false, "fingerprintEnrolled": true },
+      "station": { "siteId": "site-1", "accessGroupIds": ["group-a"] },
+      "employeeAccessGroupIds": ["group-a"],
+      "now": "2024-06-15T08:00:00+02:00"
+    },
+    "expected": { "allowed": true }
+  },
+  {
+    "description": "Suspended employee → denied",
+    "input": {
+      "employee": { "status": "suspended", "startDate": "2024-01-01", "endDate": null, "siteId": "site-1", "biometricDeclined": false, "fingerprintEnrolled": true },
+      "station": { "siteId": "site-1", "accessGroupIds": ["group-a"] },
+      "employeeAccessGroupIds": ["group-a"],
+      "now": "2024-06-15T08:00:00+02:00"
+    },
+    "expected": { "allowed": false, "reason": "Employee suspended" }
+  },
+  {
+    "description": "Terminated employee → denied",
+    "input": {
+      "employee": { "status": "terminated", "startDate": "2024-01-01", "endDate": "2024-05-31", "siteId": "site-1", "biometricDeclined": false, "fingerprintEnrolled": true },
+      "station": { "siteId": "site-1", "accessGroupIds": ["group-a"] },
+      "employeeAccessGroupIds": ["group-a"],
+      "now": "2024-06-15T08:00:00+02:00"
+    },
+    "expected": { "allowed": false, "reason": "Employee no longer active" }
+  },
+  {
+    "description": "Contract end date passed → access ended",
+    "input": {
+      "employee": { "status": "active", "startDate": "2024-01-01", "endDate": "2024-05-31", "siteId": "site-1", "biometricDeclined": false, "fingerprintEnrolled": true },
+      "station": { "siteId": "site-1", "accessGroupIds": ["group-a"] },
+      "employeeAccessGroupIds": ["group-a"],
+      "now": "2024-06-15T08:00:00+02:00"
+    },
+    "expected": { "allowed": false, "reason": "Access ended 31 May 2024" }
+  },
+  {
+    "description": "Start date in future → access starts",
+    "input": {
+      "employee": { "status": "active", "startDate": "2024-07-01", "endDate": null, "siteId": "site-1", "biometricDeclined": false, "fingerprintEnrolled": true },
+      "station": { "siteId": "site-1", "accessGroupIds": ["group-a"] },
+      "employeeAccessGroupIds": ["group-a"],
+      "now": "2024-06-15T08:00:00+02:00"
+    },
+    "expected": { "allowed": false, "reason": "Access starts 01 Jul 2024" }
+  },
+  {
+    "description": "Same site, not in any station access group → no access to entry",
+    "input": {
+      "employee": { "status": "active", "startDate": "2024-01-01", "endDate": null, "siteId": "site-1", "biometricDeclined": false, "fingerprintEnrolled": true },
+      "station": { "siteId": "site-1", "accessGroupIds": ["group-b"] },
+      "employeeAccessGroupIds": ["group-a"],
+      "now": "2024-06-15T08:00:00+02:00"
+    },
+    "expected": { "allowed": false, "reason": "No access to this entry" }
+  },
+  {
+    "description": "Different site, not in group → not registered at this site",
+    "input": {
+      "employee": { "status": "active", "startDate": "2024-01-01", "endDate": null, "siteId": "site-2", "biometricDeclined": false, "fingerprintEnrolled": true },
+      "station": { "siteId": "site-1", "accessGroupIds": ["group-b"] },
+      "employeeAccessGroupIds": ["group-a"],
+      "now": "2024-06-15T08:00:00+02:00"
+    },
+    "expected": { "allowed": false, "reason": "Not registered at this site" }
+  },
+  {
+    "description": "Cross-site employee in correct access group → allowed",
+    "input": {
+      "employee": { "status": "active", "startDate": "2024-01-01", "endDate": null, "siteId": "site-2", "biometricDeclined": false, "fingerprintEnrolled": true },
+      "station": { "siteId": "site-1", "accessGroupIds": ["group-b"] },
+      "employeeAccessGroupIds": ["group-b"],
+      "now": "2024-06-15T08:00:00+02:00"
+    },
+    "expected": { "allowed": true }
+  }
+]

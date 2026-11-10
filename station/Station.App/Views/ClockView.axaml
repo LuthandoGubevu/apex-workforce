@@ -1,0 +1,163 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:Apex.Station.ViewModels"
+             x:Class="Apex.Station.Views.ClockView"
+             x:DataType="vm:MainViewModel"
+             Background="#0B2D28">
+
+  <UserControl.Resources>
+    <SolidColorBrush x:Key="AcceptedBrush" Color="#22C55E"/>
+    <SolidColorBrush x:Key="DeniedBrush"   Color="#EF4444"/>
+    <SolidColorBrush x:Key="HeaderBrush"   Color="#0B5D52"/>
+    <SolidColorBrush x:Key="TextDimBrush"  Color="#A7C4BF"/>
+    <SolidColorBrush x:Key="AmberBrush"    Color="#F59E0B"/>
+  </UserControl.Resources>
+
+  <Grid RowDefinitions="64,*,80">
+
+    <!-- Header -->
+    <Border Grid.Row="0" Background="{StaticResource HeaderBrush}" Padding="24,0">
+      <Grid ColumnDefinitions="*,Auto,*">
+        <!-- Station / Site name -->
+        <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center" Spacing="8">
+          <TextBlock Text="{Binding StationName}"
+                     FontSize="18" FontWeight="SemiBold" Foreground="White"/>
+          <TextBlock Text="·" Foreground="{StaticResource TextDimBrush}" FontSize="18"
+                     IsVisible="{Binding SiteName, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
+          <TextBlock Text="{Binding SiteName}"
+                     FontSize="16" Foreground="{StaticResource TextDimBrush}"
+                     IsVisible="{Binding SiteName, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
+        </StackPanel>
+
+        <!-- Simulate badge (centre) -->
+        <Border Grid.Column="1" Background="{StaticResource AmberBrush}"
+                CornerRadius="4" Padding="10,4"
+                IsVisible="{Binding IsSimulateMode}"
+                VerticalAlignment="Center">
+          <TextBlock Text="SIMULATION MODE" FontSize="11" FontWeight="Bold"
+                     Foreground="White" LetterSpacing="1"/>
+        </Border>
+
+        <!-- Sync status (right) -->
+        <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right"
+                    VerticalAlignment="Center" Spacing="6">
+          <TextBlock Text="{Binding SyncStatus}" FontSize="12"
+                     Foreground="{StaticResource TextDimBrush}"/>
+          <TextBlock Text="·" Foreground="{StaticResource TextDimBrush}" FontSize="12"/>
+          <TextBlock Text="{Binding LastSyncTime}" FontSize="12"
+                     Foreground="{StaticResource TextDimBrush}"/>
+        </StackPanel>
+      </Grid>
+    </Border>
+
+    <!-- Main content -->
+    <Grid Grid.Row="1" RowDefinitions="Auto,*">
+
+      <!-- Clock -->
+      <StackPanel Grid.Row="0" HorizontalAlignment="Center" Margin="0,40,0,0">
+        <TextBlock Text="{Binding CurrentTime}"
+                   FontSize="88" FontWeight="Light" Foreground="White"
+                   HorizontalAlignment="Center" LetterSpacing="-2"/>
+        <TextBlock Text="{Binding CurrentDate}"
+                   FontSize="20" Foreground="{StaticResource TextDimBrush}"
+                   HorizontalAlignment="Center" Margin="0,4,0,0"/>
+      </StackPanel>
+
+      <!-- Status area -->
+      <Grid Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center">
+
+        <!-- Idle state -->
+        <StackPanel Spacing="16" HorizontalAlignment="Center"
+                    IsVisible="{Binding ScanState,
+                                Converter={x:Static ObjectConverters.Equal},
+                                ConverterParameter={x:Static vm:ScanState.Idle}}">
+          <!-- Fingerprint SVG icon (inline path) -->
+          <Canvas Width="80" Height="80" HorizontalAlignment="Center">
+            <Path Fill="#4D7A74" Data="M40 10 C23.4 10 10 23.4 10 40 C10 56.6 23.4 70 40 70 C56.6 70 70 56.6 70 40 C70 23.4 56.6 10 40 10 Z M40 16 C53.3 16 64 26.7 64 40 C64 53.3 53.3 64 40 64 C26.7 64 16 53.3 16 40 C16 26.7 26.7 16 40 16 Z"/>
+            <Path Stroke="White" StrokeThickness="2.5" StrokeLineCap="Round"
+                  Data="M25 40 C25 31.7 31.7 25 40 25 C48.3 25 55 31.7 55 40 M30 40 C30 34.5 34.5 30 40 30 C45.5 30 50 34.5 50 40 M35 40 C35 37.2 37.2 35 40 35 M40 35 L40 55 M45 40 C45 42.8 42.8 45 40 45"/>
+          </Canvas>
+          <TextBlock Text="PLACE FINGER ON READER"
+                     FontSize="22" FontWeight="SemiBold" Foreground="{StaticResource TextDimBrush}"
+                     LetterSpacing="2" HorizontalAlignment="Center"/>
+        </StackPanel>
+
+        <!-- Scanning state -->
+        <StackPanel Spacing="20" HorizontalAlignment="Center"
+                    IsVisible="{Binding ScanState,
+                                Converter={x:Static ObjectConverters.Equal},
+                                ConverterParameter={x:Static vm:ScanState.Scanning}}">
+          <Border Width="60" Height="60" CornerRadius="30"
+                  BorderBrush="{StaticResource TextDimBrush}" BorderThickness="3"
+                  HorizontalAlignment="Center">
+            <Border.RenderTransform>
+              <RotateTransform Angle="0"/>
+            </Border.RenderTransform>
+            <Border.Transitions>
+              <Transitions>
+                <DoubleTransition Property="Opacity" Duration="0:0:0.5"/>
+              </Transitions>
+            </Border.Transitions>
+          </Border>
+          <TextBlock Text="SCANNING…"
+                     FontSize="22" FontWeight="SemiBold" Foreground="{StaticResource TextDimBrush}"
+                     LetterSpacing="2" HorizontalAlignment="Center"/>
+        </StackPanel>
+
+        <!-- Result state -->
+        <StackPanel Spacing="12" HorizontalAlignment="Center"
+                    IsVisible="{Binding ScanState,
+                                Converter={x:Static ObjectConverters.Equal},
+                                ConverterParameter={x:Static vm:ScanState.Result}}">
+
+          <!-- Accepted result -->
+          <StackPanel Spacing="10" HorizontalAlignment="Center"
+                      IsVisible="{Binding ResultStatus,
+                                  Converter={x:Static ObjectConverters.Equal},
+                                  ConverterParameter={x:Static vm:ResultStatus.Accepted}}">
+            <TextBlock Text="✓" FontSize="80" Foreground="{StaticResource AcceptedBrush}"
+                       HorizontalAlignment="Center"/>
+            <TextBlock Text="{Binding ResultText}"
+                       FontSize="32" FontWeight="SemiBold" Foreground="White"
+                       HorizontalAlignment="Center"/>
+            <TextBlock FontSize="22" FontWeight="Bold"
+                       Foreground="{StaticResource AcceptedBrush}"
+                       HorizontalAlignment="Center">
+              <Run Text="ACCEPTED"/>
+              <Run Text="{Binding DirectionText}"/>
+            </TextBlock>
+          </StackPanel>
+
+          <!-- Denied result -->
+          <StackPanel Spacing="10" HorizontalAlignment="Center"
+                      IsVisible="{Binding ResultStatus,
+                                  Converter={x:Static ObjectConverters.Equal},
+                                  ConverterParameter={x:Static vm:ResultStatus.Denied}}">
+            <TextBlock Text="✗" FontSize="80" Foreground="{StaticResource DeniedBrush}"
+                       HorizontalAlignment="Center"/>
+            <TextBlock Text="{Binding ResultText}"
+                       FontSize="28" FontWeight="SemiBold" Foreground="White"
+                       HorizontalAlignment="Center"/>
+            <TextBlock Text="{Binding DeniedReason}"
+                       FontSize="20" Foreground="{StaticResource DeniedBrush}"
+                       HorizontalAlignment="Center"/>
+          </StackPanel>
+
+        </StackPanel>
+      </Grid>
+    </Grid>
+
+    <!-- Footer: Simulate Scan button (only visible in simulate mode) -->
+    <Border Grid.Row="2" HorizontalAlignment="Center" VerticalAlignment="Center"
+            IsVisible="{Binding IsSimulateMode}">
+      <Button Command="{Binding ScanCommand}"
+              Background="{StaticResource AmberBrush}"
+              Foreground="White"
+              FontSize="15" FontWeight="SemiBold"
+              Padding="32,12" CornerRadius="8">
+        SIMULATE SCAN
+      </Button>
+    </Border>
+
+  </Grid>
+</UserControl>

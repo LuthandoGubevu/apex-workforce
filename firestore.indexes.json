@@ -1,0 +1,54 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "clockEvents",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "siteId", "order": "ASCENDING" },
+        { "fieldPath": "timestamp", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "clockEvents",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "employeeId", "order": "ASCENDING" },
+        { "fieldPath": "timestamp", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "clockEvents",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "siteId", "order": "ASCENDING" },
+        { "fieldPath": "result", "order": "ASCENDING" },
+        { "fieldPath": "timestamp", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "employees",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "siteId", "order": "ASCENDING" },
+        { "fieldPath": "status", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "employees",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "siteId", "order": "ASCENDING" },
+        { "fieldPath": "department", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "audit",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "collection", "order": "ASCENDING" },
+        { "fieldPath": "timestamp", "order": "DESCENDING" }
+      ]
+    }
+  ],
+  "fieldOverrides": []
+}
