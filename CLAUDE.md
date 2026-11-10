@@ -1,7 +1,7 @@
-# Apex Workforce — Biometric Time & Attendance for SAB
+# Apex Workforce — Biometric Time & Attendance
 
 ## Scope
-Production T&A system for South African Breweries (SAB, AB InBev).  
+Multi-tenant biometric T&A platform for any organisation.  
 Employees clock in/out at site entry points with a ZKTeco ZK9500 fingerprint reader.  
 The same scan controls gate access via a USB relay.  
 
@@ -11,7 +11,7 @@ facial recognition, card readers, mobile app, live HR/payroll system integration
 ## Defaults chosen for the 11 open questions
 
 | # | Question | Decision |
-|---|----------|----------|
+|---|----------|---------|
 | 1 | Sites / stations / employees | Any number configurable. One reader per turnstile, direction = BOTH (alternates by last event). |
 | 2 | Shift times | **No** – daily attendance only (first IN, last OUT, hours on site). |
 | 3 | Daily hours | **Last OUT − first IN.** IN with no OUT = "missing clock-out", zero hours until corrected. |
