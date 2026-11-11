@@ -28,9 +28,6 @@ export default function Users() {
   const [formError, setFormError] = useState('');
   const [toast,     setToast]     = useState('');
 
-  useEffect(() => {
-    if (staffUser && staffUser.role !== 'admin') navigate('/', { replace: true });
-  }, [staffUser, navigate]);
 
   async function load() {
     const [userSnap, siteSnap] = await Promise.all([
@@ -65,7 +62,7 @@ export default function Users() {
   function validate(): string {
     if (!form.fullName.trim()) return 'Full name is required.';
     if (!form.email.trim())    return 'Email is required.';
-    if (!['admin', 'hr', 'supervisor'].includes(form.role)) return 'Invalid role.';
+    if (!['admin', 'hr'].includes(form.role)) return 'Invalid role.';
     return '';
   }
 
@@ -186,9 +183,8 @@ export default function Users() {
                 onChange={e => setForm(f => ({ ...f, role: e.target.value as UserRole }))}
                 className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/30 focus:border-brand-600"
               >
-                <option value="admin">Admin — all sites, all settings</option>
-                <option value="hr">HR — employees, enrolment, corrections, reports</option>
-                <option value="supervisor">Supervisor — read-only attendance</option>
+                <option value="admin">Admin — full access + manage staff users</option>
+                <option value="hr">HR — full access to all features</option>
               </select>
             </div>
 

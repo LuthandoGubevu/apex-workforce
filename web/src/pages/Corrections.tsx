@@ -84,7 +84,6 @@ export default function Corrections() {
     } finally { setSaving(false); }
   }
 
-  const canAdd = staffUser && ['admin','hr'].includes(staffUser.role);
   const siteName = (id: string) => sites.find(s => s.id === id)?.name ?? id;
 
   return (
@@ -94,12 +93,10 @@ export default function Corrections() {
           <h1 className="text-2xl font-semibold text-gray-900">HR Corrections</h1>
           <p className="text-gray-400 text-sm mt-0.5">Add a missing clock-in or clock-out for an employee</p>
         </div>
-        {canAdd && (
-          <button onClick={() => setOpen(true)}
+        <button onClick={() => setOpen(true)}
             className="px-4 py-2 bg-brand-800 hover:bg-brand-700 text-white text-sm font-medium rounded-xl transition-colors">
             Add Correction
           </button>
-        )}
       </div>
 
       <div className="bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 text-sm text-amber-800 mb-6">
@@ -182,7 +179,7 @@ export default function Corrections() {
                 className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/30 focus:border-brand-600 resize-none" />
             </div>
             <div className="bg-amber-50 text-amber-800 text-xs rounded-lg px-3 py-2">
-              This correction is stored as a new clock event with isCorrection = true. The original record is not changed.
+              This correction is stored as a new clock event with isCorrection = true. The original record is not changed.
             </div>
             <div className="flex justify-end gap-3 pt-1">
               <button onClick={() => setOpen(false)} className="px-4 py-2 text-sm text-gray-600">Cancel</button>

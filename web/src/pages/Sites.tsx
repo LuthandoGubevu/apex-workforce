@@ -42,13 +42,11 @@ export default function Sites() {
     } finally { setSaving(false); }
   }
 
-  const isAdmin = staffUser?.role === 'admin';
-
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-semibold text-gray-900">Sites</h1>
-        {isAdmin && <button onClick={openAdd} className="px-4 py-2 bg-brand-800 hover:bg-brand-700 text-white text-sm font-medium rounded-xl transition-colors">Add Site</button>}
+        <button onClick={openAdd} className="px-4 py-2 bg-brand-800 hover:bg-brand-700 text-white text-sm font-medium rounded-xl transition-colors">Add Site</button>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -60,9 +58,7 @@ export default function Sites() {
                 <div className="text-xs font-mono text-gray-400 mt-0.5">{s.code}</div>
                 {s.city && <div className="text-sm text-gray-500 mt-1">{s.city}</div>}
               </div>
-              {isAdmin && (
-                <button onClick={() => openEdit(s)} className="text-brand-700 hover:text-brand-800 text-xs font-medium">Edit</button>
-              )}
+              <button onClick={() => openEdit(s)} className="text-brand-700 hover:text-brand-800 text-xs font-medium">Edit</button>
             </div>
             {s.address && <div className="text-xs text-gray-400 mt-2">{s.address}</div>}
           </div>
