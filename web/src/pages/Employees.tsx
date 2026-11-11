@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
-import { getDocs, query, orderBy, where, collection, doc, serverTimestamp, writeBatch } from 'firebase/firestore';
+import { getDocs, query, orderBy, collection, doc, serverTimestamp, writeBatch } from 'firebase/firestore';
 import { db } from '@/firebase';
 import { useAuth } from '@/hooks/useAuth';
-import type { Employee, EmployeeStatus, EmploymentType, Site } from '@/types';
+import type { Employee, EmployeeStatus, EmploymentType } from '@/types';
 import Badge from '@/components/Badge';
 import Modal from '@/components/Modal';
 
@@ -25,33 +25,16 @@ const EMPTY: Omit<Employee, 'id' | 'createdAt' | 'updatedAt' | 'createdBy' | 'up
 export default function Employees() {
   const { staffUser } = useAuth();
   const [employees, setEmployees] = useState<Employee[]>([]);
-  const [sites, setSites]         = useState<Site[]>([]);
   const [search, setSearch]       = useState('');
   const [filterStatus, setFilter] = useState<string>('all');
   const [modalOpen, setModalOpen] = useState(false);
   const [editing, setEditing]     = useState<Employee | null>(null);
   const [form, setForm]           = useState({ ...EMPTY });
   const [saving, setSaving]       = useState(false);
-  const [formError, setFormError] = useState('');
 
   async function load() {
-    const [empSnap, siteSnap] = await Promise.all([
-      getDocs(query(collection(db, 'employees'), orderBy('fullName'))),
-      getDocs(collection(db, 'sites')),
-    ]);
-    setEmployees(empSnap.docs.map(d => ({ id: d.id, ...d.data() }) as Employee));
-    setSites(siteSnap.docs.map(d => ({ id: d.id, ...d.data() }) as Site));
-  }
-
-  function validate(): string {
-    if (!form.employeeNumber.trim()) return 'Employee number is required.';
-    if (!form.fullName.trim())       return 'Full name is required.';
-    if (!form.department.trim())     return 'Department is required.';
-    if (!form.siteId)                return 'Site is required.';
-    if (!form.startDate)             return 'Start date is required.';
-    if (['contractor', 'temporary'].includes(form.employmentType) && !form.endDate)
-      return 'End date is required for Contractor and Temporary employees.';
-    return '';
+    const snap = await getDocs(query(collection(db, 'employees'), orderBy('fullName')));
+    setEmployees(snap.docs.map(d => ({ id: d.id, ...d.data() }) as Employee));
   }
 
   useEffect(() => { load(); }, []);
@@ -59,7 +42,6 @@ export default function Employees() {
   function openAdd() {
     setEditing(null);
     setForm({ ...EMPTY });
-    setFormError('');
     setModalOpen(true);
   }
 
@@ -73,24 +55,13 @@ export default function Employees() {
       endDate:        emp.endDate ?? '',   fingerprintEnrolled: emp.fingerprintEnrolled,
       biometricDeclined: emp.biometricDeclined, notes: emp.notes ?? '',
     });
-    setFormError('');
     setModalOpen(true);
   }
 
   async function save() {
     if (!staffUser) return;
-    const err = validate();
-    if (err) { setFormError(err); return; }
-    setFormError('');
     setSaving(true);
     try {
-      const dupSnap = await getDocs(
-        query(collection(db, 'employees'), where('employeeNumber', '==', form.employeeNumber.trim()))
-      );
-      if (dupSnap.docs.some(d => d.id !== editing?.id)) {
-        setFormError('An employee with this number already exists.');
-        return;
-      }
       const batch = writeBatch(db);
       const now   = serverTimestamp();
       const uid   = staffUser.id;
@@ -130,8 +101,6 @@ export default function Employees() {
     return matchSearch && matchStatus;
   });
 
-  const canEdit = staffUser && ['admin','hr'].includes(staffUser.role);
-
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
@@ -139,11 +108,9 @@ export default function Employees() {
           <h1 className="text-2xl font-semibold text-gray-900">Employees</h1>
           <p className="text-gray-400 text-sm mt-0.5">{employees.length} total</p>
         </div>
-        {canEdit && (
-          <button onClick={openAdd} className="px-4 py-2 bg-brand-800 hover:bg-brand-700 text-white text-sm font-medium rounded-xl transition-colors">
-            Add Employee
-          </button>
-        )}
+        <button onClick={openAdd} className="px-4 py-2 bg-brand-800 hover:bg-brand-700 text-white text-sm font-medium rounded-xl transition-colors">
+          Add Employee
+        </button>
       </div>
 
       <div className="flex gap-3 mb-5">
@@ -194,9 +161,7 @@ export default function Employees() {
                     />
                   </td>
                   <td className="px-5 py-3.5 text-right">
-                    {canEdit && (
-                      <button onClick={() => openEdit(e)} className="text-brand-700 hover:text-brand-800 text-xs font-medium">Edit</button>
-                    )}
+                    <button onClick={() => openEdit(e)} className="text-brand-700 hover:text-brand-800 text-xs font-medium">Edit</button>
                   </td>
                 </tr>
               ))}
@@ -212,6 +177,7 @@ export default function Employees() {
               ['Employee Number', 'employeeNumber', 'text'],
               ['Full Name',       'fullName',       'text'],
               ['Department',      'department',     'text'],
+              ['Site ID',         'siteId',         'text'],
               ['Job Title',       'jobTitle',       'text'],
               ['Start Date',      'startDate',      'date'],
               ['End Date (contractors/temp)', 'endDate', 'date'],
@@ -226,18 +192,6 @@ export default function Employees() {
                 />
               </div>
             ))}
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Site</label>
-              <select
-                value={form.siteId}
-                onChange={e => setForm(f => ({ ...f, siteId: e.target.value }))}
-                className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/30 focus:border-brand-600"
-              >
-                <option value="">Select site…</option>
-                {sites.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
-              </select>
-            </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Employment Type</label>
@@ -284,10 +238,6 @@ export default function Employees() {
                 className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/30 focus:border-brand-600 resize-none"
               />
             </div>
-
-            {formError && (
-              <p className="text-sm text-red-600 bg-red-50 px-3.5 py-2.5 rounded-xl">{formError}</p>
-            )}
 
             <div className="flex justify-end gap-3 pt-2">
               <button onClick={() => setModalOpen(false)} className="px-4 py-2 text-sm text-gray-600 hover:text-gray-900">Cancel</button>

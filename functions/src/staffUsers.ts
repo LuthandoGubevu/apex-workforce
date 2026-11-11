@@ -24,7 +24,7 @@ export const createStaffUser = onCall(
 
     if (!email?.trim())    throw new HttpsError('invalid-argument', 'Email is required');
     if (!fullName?.trim()) throw new HttpsError('invalid-argument', 'Full name is required');
-    if (!['admin', 'hr', 'supervisor'].includes(role)) {
+    if (!['admin', 'hr'].includes(role)) {
       throw new HttpsError('invalid-argument', 'Invalid role');
     }
 
