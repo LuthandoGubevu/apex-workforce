@@ -49,13 +49,12 @@ export default function Stations() {
   }
 
   const siteName = (id: string) => sites.find(s => s.id === id)?.name ?? id;
-  const canEdit  = staffUser && ['admin'].includes(staffUser.role);
 
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-semibold text-gray-900">Clocking Stations</h1>
-        {canEdit && <button onClick={openAdd} className="px-4 py-2 bg-brand-800 hover:bg-brand-700 text-white text-sm font-medium rounded-xl transition-colors">Add Station</button>}
+        <button onClick={openAdd} className="px-4 py-2 bg-brand-800 hover:bg-brand-700 text-white text-sm font-medium rounded-xl transition-colors">Add Station</button>
       </div>
 
       <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
@@ -78,7 +77,7 @@ export default function Stations() {
                     <Badge label={st.deviceId ? 'Connected' : 'Not registered'} variant={st.deviceId ? 'green' : 'gray'} />
                   </td>
                   <td className="px-5 py-3.5 text-right">
-                    {canEdit && <button onClick={() => openEdit(st)} className="text-brand-700 hover:text-brand-800 text-xs font-medium">Edit</button>}
+                    <button onClick={() => openEdit(st)} className="text-brand-700 hover:text-brand-800 text-xs font-medium">Edit</button>
                   </td>
                 </tr>
               ))}

@@ -101,8 +101,6 @@ export default function Employees() {
     return matchSearch && matchStatus;
   });
 
-  const canEdit = staffUser && ['admin','hr'].includes(staffUser.role);
-
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
@@ -110,11 +108,9 @@ export default function Employees() {
           <h1 className="text-2xl font-semibold text-gray-900">Employees</h1>
           <p className="text-gray-400 text-sm mt-0.5">{employees.length} total</p>
         </div>
-        {canEdit && (
-          <button onClick={openAdd} className="px-4 py-2 bg-brand-800 hover:bg-brand-700 text-white text-sm font-medium rounded-xl transition-colors">
-            Add Employee
-          </button>
-        )}
+        <button onClick={openAdd} className="px-4 py-2 bg-brand-800 hover:bg-brand-700 text-white text-sm font-medium rounded-xl transition-colors">
+          Add Employee
+        </button>
       </div>
 
       <div className="flex gap-3 mb-5">
@@ -165,9 +161,7 @@ export default function Employees() {
                     />
                   </td>
                   <td className="px-5 py-3.5 text-right">
-                    {canEdit && (
-                      <button onClick={() => openEdit(e)} className="text-brand-700 hover:text-brand-800 text-xs font-medium">Edit</button>
-                    )}
+                    <button onClick={() => openEdit(e)} className="text-brand-700 hover:text-brand-800 text-xs font-medium">Edit</button>
                   </td>
                 </tr>
               ))}

@@ -4,16 +4,17 @@ import { auth } from '@/firebase';
 import { useAuth } from '@/hooks/useAuth';
 
 const NAV = [
-  { to: '/',             end: true,  label: 'Dashboard',     icon: 'grid'     },
-  { to: '/on-site-now',  end: false, label: 'On Site Now',   icon: 'users'    },
-  { to: '/employees',    end: false, label: 'Employees',     icon: 'person'   },
-  { to: '/attendance',   end: false, label: 'Attendance',    icon: 'calendar' },
-  { to: '/clock-events', end: false, label: 'Clock Events',  icon: 'clock'    },
-  { to: '/corrections',  end: false, label: 'Corrections',   icon: 'edit',    adminHr: true },
-  { to: '/enrolment',   end: false, label: 'Enrolment',     icon: 'finger',  adminHr: true },
-  { to: '/access-groups',end: false, label: 'Access Groups', icon: 'lock',    adminHr: true },
-  { to: '/stations',     end: false, label: 'Stations',      icon: 'wifi',    adminOnly: true },
-  { to: '/sites',        end: false, label: 'Sites',         icon: 'building', adminOnly: true },
+  { to: '/',             end: true,  label: 'Dashboard',    icon: 'grid'     },
+  { to: '/on-site-now',  end: false, label: 'On Site Now',  icon: 'users'    },
+  { to: '/employees',    end: false, label: 'Employees',    icon: 'person'   },
+  { to: '/attendance',   end: false, label: 'Attendance',   icon: 'calendar' },
+  { to: '/clock-events', end: false, label: 'Clock Events', icon: 'clock'    },
+  { to: '/corrections',  end: false, label: 'Corrections',  icon: 'edit'     },
+  { to: '/enrolment',    end: false, label: 'Enrolment',    icon: 'finger'   },
+  { to: '/access-groups',end: false, label: 'Access Groups',icon: 'lock'     },
+  { to: '/stations',     end: false, label: 'Stations',     icon: 'wifi'     },
+  { to: '/sites',        end: false, label: 'Sites',        icon: 'building' },
+  { to: '/users',        end: false, label: 'Staff Users',  icon: 'users'    },
 ];
 
 const Icon = ({ name }: { name: string }) => {
@@ -36,12 +37,6 @@ export default function Sidebar() {
   const { staffUser } = useAuth();
   const role = staffUser?.role ?? '';
 
-  const items = NAV.filter(n => {
-    if (n.adminOnly) return role === 'admin';
-    if (n.adminHr)   return ['admin','hr'].includes(role);
-    return true;
-  });
-
   return (
     <aside className="w-60 flex flex-col bg-brand-800 text-white shrink-0">
       <div className="px-5 py-6 border-b border-brand-700">
@@ -50,7 +45,7 @@ export default function Sidebar() {
       </div>
 
       <nav className="flex-1 px-3 py-4 space-y-0.5 overflow-y-auto">
-        {items.map(item => (
+        {NAV.map(item => (
           <NavLink
             key={item.to} to={item.to} end={item.end}
             className={({ isActive }) =>

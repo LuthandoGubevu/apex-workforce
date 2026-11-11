@@ -8,7 +8,7 @@ export type EmployeeStatus = 'active' | 'suspended' | 'terminated';
 export type StationDirection = 'IN' | 'OUT' | 'BOTH';
 export type ClockDirection = 'IN' | 'OUT';
 export type ClockResult = 'accepted' | 'denied';
-export type UserRole = 'admin' | 'hr' | 'supervisor' | 'device';
+export type UserRole = 'admin' | 'hr' | 'device';
 
 export interface BiometricConsent {
   date: string;

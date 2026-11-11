@@ -43,7 +43,7 @@ function fmt(iso?: string) {
 
 export default function Enrolment() {
   const { user, staffUser } = useAuth();
-  const isHR = ['admin', 'hr'].includes(staffUser?.role ?? '');
+  const isHR = true;
 
   const [employees, setEmployees]   = useState<Employee[]>([]);
   const [stations,  setStations]    = useState<ClockingStation[]>([]);
@@ -205,8 +205,7 @@ export default function Enrolment() {
           <h1 className="text-2xl font-semibold text-gray-900">Enrolment</h1>
           <p className="text-sm text-gray-500 mt-0.5">Manage fingerprint enrolment requests and POPIA consent</p>
         </div>
-        {isHR && (
-          <button
+        <button
             onClick={() => setOpen(true)}
             className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-brand-800 text-white text-sm font-medium hover:bg-brand-700 transition-colors"
           >
@@ -215,7 +214,6 @@ export default function Enrolment() {
             </svg>
             New Request
           </button>
-        )}
       </div>
 
       {/* POPIA notice */}
@@ -263,13 +261,13 @@ export default function Enrolment() {
               <th className="text-left px-4 py-3 font-medium text-gray-600">Requested</th>
               <th className="text-left px-4 py-3 font-medium text-gray-600">Completed</th>
               <th className="text-left px-4 py-3 font-medium text-gray-600">Status</th>
-              {isHR && <th className="px-4 py-3" />}
+              <th className="px-4 py-3" />
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
             {filtered.length === 0 && (
               <tr>
-                <td colSpan={isHR ? 7 : 6} className="px-4 py-10 text-center text-gray-400">
+                <td colSpan={7} className="px-4 py-10 text-center text-gray-400">
                   No enrolment requests
                 </td>
               </tr>
@@ -292,8 +290,7 @@ export default function Enrolment() {
                     <div className="text-xs text-red-600 mt-0.5">{r.errorMessage}</div>
                   )}
                 </td>
-                {isHR && (
-                  <td className="px-4 py-3 text-right">
+                <td className="px-4 py-3 text-right">
                     {r.status === 'pending' && (
                       <button
                         onClick={() => cancelRequest(r)}
@@ -303,7 +300,6 @@ export default function Enrolment() {
                       </button>
                     )}
                   </td>
-                )}
               </tr>
             ))}
           </tbody>
